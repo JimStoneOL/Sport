@@ -2,7 +2,10 @@ package com.marat.controlworkbymarat.service;
 
 import com.marat.controlworkbymarat.dto.Message;
 import com.marat.controlworkbymarat.dto.OrderDTO;
+import com.marat.controlworkbymarat.dto.OrderResponse;
 import com.marat.controlworkbymarat.entity.Order;
+import com.marat.controlworkbymarat.entity.User;
+import com.marat.controlworkbymarat.entity.enums.ERole;
 import com.marat.controlworkbymarat.entity.enums.EStatus;
 import com.marat.controlworkbymarat.facade.OrderFacade;
 import com.marat.controlworkbymarat.repository.OrderRepository;
@@ -38,12 +41,18 @@ public class OrderService {
         return orderFacade.orderToOrderDTO(savedOrder);
     }
 
-    public OrderDTO getOrderById(Long id){
-        return orderFacade.orderToOrderDTO(orderRepository.findById(id).orElse(null));
+    public OrderResponse getOrderById(Long id){
+        return orderFacade.orderToOrderResponse(orderRepository.findById(id).orElse(null));
     }
 
-    public List<OrderDTO> getAllOrders(){
-        return orderFacade.orderListToOrderDTOList(orderRepository.findAll());
+    public List<OrderResponse> getAllOrders(Principal principal){
+        User user=principalService.getUserByPrincipal(principal);
+        if(user.getRoles().contains(ERole.ROLE_ADMIN)){
+            return orderFacade.orderListToOrderResponseList(orderRepository.findAll());
+        }
+            return orderFacade.orderListToOrderResponseList(orderRepository.findAllByUser(user));
+
+
     }
 
 

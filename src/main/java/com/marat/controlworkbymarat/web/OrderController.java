@@ -2,6 +2,7 @@ package com.marat.controlworkbymarat.web;
 
 import com.marat.controlworkbymarat.dto.Message;
 import com.marat.controlworkbymarat.dto.OrderDTO;
+import com.marat.controlworkbymarat.dto.OrderResponse;
 import com.marat.controlworkbymarat.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,12 +25,14 @@ public class OrderController {
     }
 
     @GetMapping("/get/{id}")
-    public OrderDTO getOrderById(@PathVariable long id){
+    public OrderResponse getOrderById(@PathVariable long id){
         return orderService.getOrderById(id);
     }
 
     @GetMapping("/get/all")
-    public List<OrderDTO> getAllOrders(){
-        return orderService.getAllOrders();
+    public List<OrderResponse> getAllOrders(Principal principal){
+        return orderService.getAllOrders(principal);
     }
+
+
 }
