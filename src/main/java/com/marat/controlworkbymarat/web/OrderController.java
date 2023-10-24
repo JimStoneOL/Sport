@@ -34,5 +34,9 @@ public class OrderController {
         return orderService.getAllOrders(principal);
     }
 
+    @PostMapping("/change/{id}")
+    public Message getAllOrders(@PathVariable long id){
+        return orderService.changeStatus(id);
+    }
 
 }

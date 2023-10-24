@@ -4,6 +4,7 @@ import com.marat.controlworkbymarat.dto.Message;
 import com.marat.controlworkbymarat.dto.OrderDTO;
 import com.marat.controlworkbymarat.dto.OrderResponse;
 import com.marat.controlworkbymarat.entity.Order;
+import com.marat.controlworkbymarat.entity.Role;
 import com.marat.controlworkbymarat.entity.User;
 import com.marat.controlworkbymarat.entity.enums.ERole;
 import com.marat.controlworkbymarat.entity.enums.EStatus;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class OrderService {
@@ -41,18 +44,28 @@ public class OrderService {
         return orderFacade.orderToOrderDTO(savedOrder);
     }
 
+    public Message changeStatus(long id){
+        Order order=orderRepository.findById(id).orElse(null);
+        order.setEStatus(EStatus.COMPLETED);
+        orderRepository.save(order);
+        return new Message("Статус изменен");
+    }
+
     public OrderResponse getOrderById(Long id){
         return orderFacade.orderToOrderResponse(orderRepository.findById(id).orElse(null));
     }
 
     public List<OrderResponse> getAllOrders(Principal principal){
         User user=principalService.getUserByPrincipal(principal);
-        if(user.getRoles().contains(ERole.ROLE_ADMIN)){
+        Set<Role> roles=new HashSet<>();
+        Role role=new Role();
+        role.setId(2l);
+        role.setName(ERole.ROLE_ADMIN);
+        roles.add(role);
+        if(user.getRoles().equals(roles)){
             return orderFacade.orderListToOrderResponseList(orderRepository.findAll());
         }
             return orderFacade.orderListToOrderResponseList(orderRepository.findAllByUser(user));
-
-
     }
 
 
